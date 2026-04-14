@@ -4,11 +4,12 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.*;
 
-import com.example.BackendServicio.models.request.DeviceRequest;
-import com.example.BackendServicio.models.response.CarbonFootprintSummaryResponse;
+import com.example.BackendServicio.models.request.DeviceRegisterRequest;
+import com.example.BackendServicio.models.request.DeviceUpdateRequest;
 import com.example.BackendServicio.models.response.DeviceResponse;
 import com.example.BackendServicio.servicios.DeviceService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -18,9 +19,9 @@ public class DeviceController {
 
     private final DeviceService deviceService;
 
-    @PostMapping
-    public DeviceResponse create(@RequestBody DeviceRequest request) {
-        return deviceService.createDevice(request);
+    @PostMapping("/register")
+    public DeviceResponse register(@Valid @RequestBody DeviceRegisterRequest request) {
+        return deviceService.registerDevice(request);
     }
 
     @GetMapping
@@ -28,9 +29,9 @@ public class DeviceController {
         return deviceService.getMyDevices();
     }
 
-    @GetMapping("/summary")
-    public CarbonFootprintSummaryResponse getSummary() {
-        return deviceService.getSummary();
+    @PutMapping("/{id}")
+    public DeviceResponse update(@PathVariable Integer id, @Valid @RequestBody DeviceUpdateRequest request) {
+        return deviceService.updateDevice(id, request);
     }
 
     @DeleteMapping("/{id}")
@@ -38,4 +39,3 @@ public class DeviceController {
         deviceService.deleteDevice(id);
     }
 }
-

@@ -14,6 +14,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -32,13 +33,14 @@ import lombok.NoArgsConstructor;
 public class UserEntity implements UserDetails{
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
     @Basic
     @Column(nullable = false)
     String nombre;
     @Column(nullable = false)
     String username;
+    @Column(nullable = false)
     String password;
     @Enumerated(EnumType.STRING) 
     Role role;

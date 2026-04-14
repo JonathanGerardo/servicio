@@ -1,5 +1,6 @@
 package com.example.BackendServicio.servicios;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -7,8 +8,10 @@ import org.springframework.stereotype.Service;
 
 import com.example.BackendServicio.entidades.DeviceEntity;
 import com.example.BackendServicio.entidades.UserEntity;
-import com.example.BackendServicio.models.request.DeviceRequest;
-import com.example.BackendServicio.models.response.CarbonFootprintSummaryResponse;
+import com.example.BackendServicio.excepciones.ConflictException;
+import com.example.BackendServicio.excepciones.ResourceNotFoundException;
+import com.example.BackendServicio.models.request.DeviceRegisterRequest;
+import com.example.BackendServicio.models.request.DeviceUpdateRequest;
 import com.example.BackendServicio.models.response.DeviceResponse;
 import com.example.BackendServicio.repositorios.DeviceRepository;
 import com.example.BackendServicio.repositorios.UserRepository;
@@ -22,89 +25,104 @@ public class DeviceService {
     private final DeviceRepository deviceRepository;
     private final UserRepository userRepository;
 
-    private static final double FACTOR_CO2 = 0.475;
-
-    public DeviceResponse createDevice(DeviceRequest request) {
-
+    private UserEntity getAuthenticatedUser() {
         String username = SecurityContextHolder.getContext()
-                .getAuthentication().getName();
+                .getAuthentication()
+                .getName();
 
-        UserEntity user = userRepository.findByUsername(username).orElseThrow();
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario autenticado no encontrado"));
+    }
 
-        double watts = request.getVoltaje() * request.getCorriente();
-        double consumoKwh = (watts * request.getHorasUsoDiario()) / 1000;
-        double huella = consumoKwh * FACTOR_CO2;
+    public DeviceResponse registerDevice(DeviceRegisterRequest request) {
+        UserEntity user = getAuthenticatedUser();
 
-        DeviceEntity device = DeviceEntity.builder()
-                .nombre(request.getNombre())
-                .voltaje(request.getVoltaje())
-                .corriente(request.getCorriente())
-                .horasUsoDiario(request.getHorasUsoDiario())
-                .watts(watts)
-                .consumoKwh(consumoKwh)
-                .huellaCarbono(huella)
-                .user(user)
-                .build();
+        DeviceEntity device = deviceRepository.findByDeviceUid(request.getDeviceUid())
+                .orElseGet(() -> {
+                    DeviceEntity nuevo = DeviceEntity.builder()
+                            .deviceUid(request.getDeviceUid())
+                            .deviceName(request.getDeviceName().trim())
+                            .bleName(request.getBleName())
+                            .activo(true)
+                            .registradoEn(LocalDateTime.now())
+                            .ultimaConexion(LocalDateTime.now())
+                            .user(user)
+                            .build();
 
-        DeviceEntity saved = deviceRepository.save(device);
+                    return deviceRepository.save(nuevo);
+                });
 
-        return DeviceResponse.builder()
-                .id(saved.getId())
-                .nombre(saved.getNombre())
-                .watts(saved.getWatts())
-                .consumoKwh(saved.getConsumoKwh())
-                .huellaCarbono(saved.getHuellaCarbono())
-                .build();
+        if (!device.getUser().getId().equals(user.getId())) {
+            throw new ConflictException("El dispositivo ya está vinculado a otro usuario");
+        }
+
+        device.setUltimaConexion(LocalDateTime.now());
+
+        if (request.getBleName() != null && !request.getBleName().isBlank()) {
+            device.setBleName(request.getBleName().trim());
+        }
+
+        device = deviceRepository.save(device);
+
+        return mapToResponse(device);
     }
 
     public List<DeviceResponse> getMyDevices() {
-
-        String username = SecurityContextHolder.getContext()
-                .getAuthentication().getName();
-
-        UserEntity user = userRepository.findByUsername(username).orElseThrow();
+        UserEntity user = getAuthenticatedUser();
 
         return deviceRepository.findByUserId(user.getId())
                 .stream()
-                .map(device -> DeviceResponse.builder()
-                        .id(device.getId())
-                        .nombre(device.getNombre())
-                        .watts(device.getWatts())
-                        .consumoKwh(device.getConsumoKwh())
-                        .huellaCarbono(device.getHuellaCarbono())
-                        .build())
+                .map(this::mapToResponse)
                 .toList();
     }
 
-    public CarbonFootprintSummaryResponse getSummary() {
+    public DeviceResponse updateDevice(Integer id, DeviceUpdateRequest request) {
+        UserEntity user = getAuthenticatedUser();
 
-        String username = SecurityContextHolder.getContext()
-                .getAuthentication().getName();
+        DeviceEntity device = deviceRepository.findByIdAndUserId(id, user.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Dispositivo no encontrado"));
 
-        UserEntity user = userRepository.findByUsername(username).orElseThrow();
+        if (request.getDeviceName() != null && !request.getDeviceName().isBlank()) {
+            device.setDeviceName(request.getDeviceName().trim());
+        }
 
-        List<DeviceEntity> devices = deviceRepository.findByUserId(user.getId());
+        if (request.getUbicacion() != null) {
+            device.setUbicacion(request.getUbicacion().trim());
+        }
 
-        double totalWatts = devices.stream()
-                .mapToDouble(DeviceEntity::getWatts)
-                .sum();
+        if (request.getEtiqueta() != null) {
+            device.setEtiqueta(request.getEtiqueta().trim());
+        }
 
-        double totalConsumo = devices.stream()
-                .mapToDouble(DeviceEntity::getConsumoKwh)
-                .sum();
+        if (request.getActivo() != null) {
+            device.setActivo(request.getActivo());
+        }
 
-        double totalHuella = devices.stream()
-                .mapToDouble(DeviceEntity::getHuellaCarbono)
-                .sum();
+        device = deviceRepository.save(device);
 
-        return CarbonFootprintSummaryResponse.builder()
-                .totalWatts(totalWatts)
-                .totalConsumoKwh(totalConsumo)
-                .totalHuellaCarbono(totalHuella)
-                .build();
+        return mapToResponse(device);
     }
 
     public void deleteDevice(Integer id) {
-        deviceRepository.deleteById(id);
+        UserEntity user = getAuthenticatedUser();
+
+        DeviceEntity device = deviceRepository.findByIdAndUserId(id, user.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Dispositivo no encontrado"));
+
+        deviceRepository.delete(device);
+    }
+
+    private DeviceResponse mapToResponse(DeviceEntity device) {
+        return DeviceResponse.builder()
+                .id(device.getId())
+                .deviceUid(device.getDeviceUid())
+                .deviceName(device.getDeviceName())
+                .bleName(device.getBleName())
+                .ubicacion(device.getUbicacion())
+                .etiqueta(device.getEtiqueta())
+                .activo(device.getActivo())
+                .registradoEn(device.getRegistradoEn())
+                .ultimaConexion(device.getUltimaConexion())
+                .build();
     }
 }
