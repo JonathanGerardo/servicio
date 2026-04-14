@@ -12,7 +12,7 @@ export default function Login() {
     e.preventDefault();
     try {
       const res = await api.post("/access/login", form);
-      login(res.data.token); // Usamos el context para que la App se entere [cite: 19, 32]
+      login(res.data.token);
       navigate("/dashboard");
     } catch (err) {
       alert("Error en credenciales");
@@ -20,13 +20,38 @@ export default function Login() {
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <input placeholder="Email" onChange={(e) => setForm({ ...form, username: e.target.value })} />
-        <input type="password" placeholder="Password" onChange={(e) => setForm({ ...form, password: e.target.value })} />
-        <button type="submit">Entrar</button>
-      </form>
+    <div className="auth-wrapper">
+      <div className="auth-card">
+        <h2 className="auth-title">Iniciar sesión</h2>
+        <p className="auth-subtitle">
+          Accede para consultar tu consumo y huella de carbono.
+        </p>
+
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <div className="input-group">
+            <label className="input-label">Correo electrónico</label>
+            <input
+              className="app-input"
+              placeholder="Ingresa tu correo"
+              onChange={(e) => setForm({ ...form, username: e.target.value })}
+            />
+          </div>
+
+          <div className="input-group">
+            <label className="input-label">Contraseña</label>
+            <input
+              className="app-input"
+              type="password"
+              placeholder="Ingresa tu contraseña"
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
+            />
+          </div>
+
+          <button className="app-button app-button-primary" type="submit">
+            Entrar
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

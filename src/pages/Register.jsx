@@ -19,24 +19,47 @@ export default function Register() {
   };
 
   return (
-    <div>
-      <h2>Register</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          placeholder="Nombre"
-          onChange={(e) => setForm({ ...form, nombre: e.target.value })}
-        />
-        <input
-          placeholder="Email"
-          onChange={(e) => setForm({ ...form, username: e.target.value })}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
-        />
-        <button type="submit">Register</button>
-      </form>
+    <div className="auth-wrapper">
+      <div className="auth-card">
+        <h2 className="auth-title">Crear cuenta</h2>
+        <p className="auth-subtitle">
+          Registra tu perfil para empezar a monitorear tus dispositivos.
+        </p>
+
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <div className="input-group">
+            <label className="input-label">Nombre</label>
+            <input
+              className="app-input"
+              placeholder="Ingresa tu nombre"
+              onChange={(e) => setForm({ ...form, nombre: e.target.value })}
+            />
+          </div>
+
+          <div className="input-group">
+            <label className="input-label">Correo electrónico</label>
+            <input
+              className="app-input"
+              placeholder="Ingresa tu correo"
+              onChange={(e) => setForm({ ...form, username: e.target.value })}
+            />
+          </div>
+
+          <div className="input-group">
+            <label className="input-label">Contraseña</label>
+            <input
+              className="app-input"
+              type="password"
+              placeholder="Crea una contraseña"
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
+            />
+          </div>
+
+          <button className="app-button app-button-primary" type="submit">
+            Registrarme
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
