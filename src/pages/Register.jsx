@@ -1,6 +1,7 @@
 import { useState } from "react";
 import api from "../api/api";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -9,13 +10,22 @@ export default function Register() {
     password: "",
   });
 
+  const [error, setError] = useState("");
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await api.post("/access/register", form);
-    localStorage.setItem("token", res.data.token);
-    navigate("/dashboard");
+    setError("");
+
+    try {
+      const res = await api.post("/access/register", form);
+
+      login(res.data.token);
+      navigate("/dashboard");
+    } catch {
+      setError("No fue posible registrar la cuenta.");
+    }
   };
 
   return (
@@ -32,6 +42,7 @@ export default function Register() {
             <input
               className="app-input"
               placeholder="Ingresa tu nombre"
+              value={form.nombre}
               onChange={(e) => setForm({ ...form, nombre: e.target.value })}
             />
           </div>
@@ -41,6 +52,7 @@ export default function Register() {
             <input
               className="app-input"
               placeholder="Ingresa tu correo"
+              value={form.username}
               onChange={(e) => setForm({ ...form, username: e.target.value })}
             />
           </div>
@@ -51,9 +63,25 @@ export default function Register() {
               className="app-input"
               type="password"
               placeholder="Crea una contraseña"
+              value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
             />
           </div>
+
+          {error ? (
+            <div
+              style={{
+                background: "#fee2e2",
+                color: "#991b1b",
+                padding: "12px 14px",
+                borderRadius: 12,
+                fontSize: 14,
+                fontWeight: 600,
+              }}
+            >
+              {error}
+            </div>
+          ) : null}
 
           <button className="app-button app-button-primary" type="submit">
             Registrarme

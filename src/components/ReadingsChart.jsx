@@ -12,7 +12,7 @@ export default function ReadingsChart({
   title,
   data,
   dataKey,
-  color = "#2563eb",
+  color = "var(--color-secondary)",
   unit = "",
 }) {
   const formatted = (data || []).map((item) => ({
@@ -21,16 +21,8 @@ export default function ReadingsChart({
   }));
 
   return (
-    <div
-      style={{
-        background: "#ffffff",
-        border: "1px solid #e2e8f0",
-        borderRadius: 18,
-        padding: 18,
-        boxShadow: "0 2px 10px rgba(15, 23, 42, 0.04)",
-      }}
-    >
-      <h3 style={{ marginTop: 0, marginBottom: 16, color: "#0f172a" }}>{title}</h3>
+    <div className="chart-card">
+      <h3 className="chart-title">{title}</h3>
 
       <div style={{ width: "100%", height: 280 }}>
         <ResponsiveContainer>

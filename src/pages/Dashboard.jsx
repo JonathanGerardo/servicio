@@ -78,128 +78,75 @@ export default function Dashboard() {
   }, [devices, latestReadings]);
 
   return (
-    <div style={pageStyle}>
-      <div style={containerStyle}>
-        <div style={{ marginBottom: 24 }}>
-          <h1 style={titleStyle}>Dashboard energético</h1>
-          <p style={subtitleStyle}>
-            Aquí ves el resumen general de tus equipos y el último estado disponible de cada uno.
-          </p>
-        </div>
+  <div className="app-page">
+    <div className="app-container">
+      <div className="page-header">
+        <h1 className="page-title">Dashboard energético</h1>
+        <p className="page-subtitle">
+          Aquí ves el resumen general de tus equipos y el último estado disponible de cada uno.
+        </p>
+      </div>
 
-        <div style={kpiGrid}>
-          <KpiCard
-            title="Equipos registrados"
-            value={metrics.totalDevices}
-            subtitle="Total de dispositivos en tu cuenta"
-          />
-          <KpiCard
-            title="Equipos activos"
-            value={metrics.activeDevices}
-            subtitle="Dispositivos marcados como activos"
-          />
-          <KpiCard
-            title="Potencia acumulada"
-            value={`${metrics.totalPower} W`}
-            subtitle="Suma del último valor por equipo"
-          />
-          <KpiCard
-            title="Energía acumulada"
-            value={`${metrics.totalEnergy} kWh`}
-            subtitle="Suma del último valor registrado"
-          />
-        </div>
-
-        <div style={{ marginTop: 18, marginBottom: 28 }}>
-          <KpiCard
-            title="Voltaje promedio"
-            value={`${metrics.avgVoltage} V`}
-            subtitle="Promedio de la última lectura disponible"
-          />
-        </div>
-
-        <div style={{ marginBottom: 14 }}>
-          <h2 style={sectionTitle}>Tus dispositivos</h2>
-        </div>
-
-        {loading ? (
-          <div style={emptyCard}>Cargando dispositivos...</div>
-        ) : devices.length === 0 ? (
-          <div style={emptyCard}>
-            No tienes dispositivos registrados todavía. Ve al módulo de conexión para vincular uno.
-          </div>
-        ) : (
-          <div style={deviceGrid}>
-            {devices.map((device) => (
-              <DeviceCard
-                key={device.id}
-                device={device}
-                latestReading={latestReadings[device.id]}
-                onDelete={deleteDevice}
-                onEdit={openEditModal}
-              />
-            ))}
-          </div>
-        )}
-
-        <EditDeviceModal
-          open={editOpen}
-          device={editingDevice}
-          onClose={closeEditModal}
-          onSaved={loadDevices}
+      <div className="grid-kpis">
+        <KpiCard
+          title="Equipos registrados"
+          value={metrics.totalDevices}
+          subtitle="Total de dispositivos en tu cuenta"
+        />
+        <KpiCard
+          title="Equipos activos"
+          value={metrics.activeDevices}
+          subtitle="Dispositivos marcados como activos"
+        />
+        <KpiCard
+          title="Potencia acumulada"
+          value={`${metrics.totalPower} W`}
+          subtitle="Suma del último valor por equipo"
+        />
+        <KpiCard
+          title="Energía acumulada"
+          value={`${metrics.totalEnergy} kWh`}
+          subtitle="Suma del último valor registrado"
         />
       </div>
+
+      <div style={{ marginBottom: 28 }}>
+        <KpiCard
+          title="Voltaje promedio"
+          value={`${metrics.avgVoltage} V`}
+          subtitle="Promedio de la última lectura disponible"
+        />
+      </div>
+
+      <h2 className="section-title">Tus dispositivos</h2>
+
+      {loading ? (
+        <div className="empty-card">Cargando dispositivos...</div>
+      ) : devices.length === 0 ? (
+        <div className="empty-card">
+          No tienes dispositivos registrados todavía. Ve al módulo de conexión para vincular uno.
+        </div>
+      ) : (
+        <div className="grid-devices">
+          {devices.map((device) => (
+            <DeviceCard
+              key={device.id}
+              device={device}
+              latestReading={latestReadings[device.id]}
+              onDelete={deleteDevice}
+              onEdit={openEditModal}
+            />
+          ))}
+        </div>
+      )}
+
+      <EditDeviceModal
+        open={editOpen}
+        device={editingDevice}
+        onClose={closeEditModal}
+        onSaved={loadDevices}
+      />
     </div>
-  );
+  </div>
+);
 }
-
-const pageStyle = {
-  minHeight: "100vh",
-  background: "#f8fafc",
-  padding: "24px 16px 40px",
-};
-
-const containerStyle = {
-  maxWidth: 1200,
-  margin: "0 auto",
-};
-
-const titleStyle = {
-  margin: 0,
-  color: "#0f172a",
-  fontSize: 34,
-  fontWeight: 800,
-};
-
-const subtitleStyle = {
-  marginTop: 8,
-  color: "#64748b",
-  fontSize: 15,
-};
-
-const sectionTitle = {
-  margin: 0,
-  color: "#0f172a",
-  fontSize: 24,
-  fontWeight: 800,
-};
-
-const kpiGrid = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-  gap: 16,
-};
-
-const deviceGrid = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-  gap: 18,
-};
-
-const emptyCard = {
-  background: "#ffffff",
-  border: "1px solid #e2e8f0",
-  borderRadius: 18,
-  padding: 24,
-  color: "#64748b",
-};
