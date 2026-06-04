@@ -511,3 +511,59 @@ body {
     font-size: 1.6rem;
   }
 }
+/* =========================
+   Auth verification
+========================= */
+
+.success-message {
+  background: var(--color-success-soft);
+  color: var(--color-success);
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.auth-email-mask {
+  color: var(--color-secondary);
+  font-weight: 800;
+}
+
+.verification-code-input {
+  text-align: center;
+  letter-spacing: 6px;
+  font-weight: 800;
+  font-size: 1.25rem;
+}
+
+.auth-link-button {
+  border: none;
+  background: transparent;
+  color: var(--color-secondary);
+  font-weight: 800;
+  cursor: pointer;
+  padding: 8px 0;
+  text-align: center;
+}
+
+.auth-link-button:hover {
+  color: var(--color-accent-hover);
+  text-decoration: underline;
+}
+
+.auth-link-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+.app-button:disabled,
+.app-input:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.app-button:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
