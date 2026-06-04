@@ -4,8 +4,13 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailAuthenticationException;
+import org.springframework.mail.MailException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -27,6 +32,43 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ForbiddenOperationException.class)
     public ResponseEntity<Map<String, Object>> handleForbidden(ForbiddenOperationException ex) {
         return buildResponse(HttpStatus.FORBIDDEN, ex.getMessage());
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Map<String, Object>> handleBadCredentials(BadCredentialsException ex) {
+        return buildResponse(HttpStatus.UNAUTHORIZED, "Correo o contraseña incorrectos");
+    }
+
+    @ExceptionHandler(DisabledException.class)
+    public ResponseEntity<Map<String, Object>> handleDisabledAccount(DisabledException ex) {
+        return buildResponse(
+            HttpStatus.FORBIDDEN,
+            "La cuenta aún no está verificada. Revisa tu correo e ingresa el código."
+        );
+    }
+
+    @ExceptionHandler(MailAuthenticationException.class)
+    public ResponseEntity<Map<String, Object>> handleMailAuthentication(MailAuthenticationException ex) {
+        return buildResponse(
+            HttpStatus.BAD_GATEWAY,
+            "No se pudo autenticar el correo emisor. Revisa la configuración SMTP."
+        );
+    }
+
+    @ExceptionHandler(MailException.class)
+    public ResponseEntity<Map<String, Object>> handleMailException(MailException ex) {
+        return buildResponse(
+            HttpStatus.BAD_GATEWAY,
+            "No se pudo enviar el correo de verificación. Intenta más tarde."
+        );
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, Object>> handleDataIntegrity(DataIntegrityViolationException ex) {
+        return buildResponse(
+            HttpStatus.CONFLICT,
+            "Ya existe un registro con esos datos."
+        );
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

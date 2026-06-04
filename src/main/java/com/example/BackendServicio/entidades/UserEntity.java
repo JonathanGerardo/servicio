@@ -1,5 +1,6 @@
 package com.example.BackendServicio.entidades;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -42,6 +43,13 @@ public class UserEntity implements UserDetails{
     String username;
     @Column(nullable = false)
     String password;
+    @Builder.Default
+    @Column(nullable = false)
+    private Boolean verified = false;
+
+    private String verificationCode;
+
+    private LocalDateTime verificationCodeExpiresAt;
     @Enumerated(EnumType.STRING) 
     Role role;
 
@@ -67,6 +75,6 @@ public class UserEntity implements UserDetails{
     }
     @Override
     public boolean isEnabled() {
-        return true;
+        return Boolean.TRUE.equals(verified);
     }
 }

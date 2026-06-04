@@ -11,15 +11,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisterRequest {
-
-    @NotBlank(message = "El nombre es obligatorio")
-    private String nombre;
+public class ResendCodeRequest {
 
     @NotBlank(message = "El correo es obligatorio")
     @Email(message = "Debe ser un correo válido")
     private String username;
-
-    @NotBlank(message = "La contraseña es obligatoria")
-    private String password;
 }

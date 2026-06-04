@@ -1,6 +1,5 @@
 package com.example.BackendServicio.models.request;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,15 +10,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisterRequest {
-
-    @NotBlank(message = "El nombre es obligatorio")
-    private String nombre;
+public class VerifyCodeRequest {
 
     @NotBlank(message = "El correo es obligatorio")
-    @Email(message = "Debe ser un correo válido")
     private String username;
 
-    @NotBlank(message = "La contraseña es obligatoria")
-    private String password;
+    @NotBlank(message = "El código es obligatorio")
+    private String code;
 }
