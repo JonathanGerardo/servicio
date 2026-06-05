@@ -1,3 +1,4 @@
+import { getFriendlyApiMessage } from "../utils/errorMessages";
 import { useState } from "react";
 import api from "../api/api";
 import { useNavigate } from "react-router-dom";
@@ -104,10 +105,17 @@ export default function Register() {
       setVerificationCode("");
       setSuccessMessage(
         res.data?.message ||
-          `Código enviado a ${maskEmail(username)}. Revisa tu correo para verificar la cuenta.`
+        `Código enviado a ${maskEmail(username)}. Revisa tu correo para verificar la cuenta.`
       );
     } catch (err) {
-      setError(getApiErrorMessage(err, "No fue posible registrar la cuenta."));
+      console.error("Error técnico al registrar cuenta:", err);
+
+      setError(
+        getFriendlyApiMessage(
+          err,
+          "No fue posible registrar la cuenta. Inténtalo nuevamente."
+        )
+      );
     } finally {
       setLoading(false);
     }
@@ -152,7 +160,14 @@ export default function Register() {
       login(res.data.token);
       navigate("/dashboard");
     } catch (err) {
-      setError(getApiErrorMessage(err, "No fue posible verificar el código."));
+      console.error("Error técnico al verificar código:", err);
+
+      setError(
+        getFriendlyApiMessage(
+          err,
+          "No fue posible verificar el código. Inténtalo nuevamente."
+        )
+      );
     } finally {
       setLoading(false);
     }
@@ -177,10 +192,17 @@ export default function Register() {
       setVerificationCode("");
       setSuccessMessage(
         res.data?.message ||
-          `Se envió un nuevo código a ${maskEmail(pendingEmail)}.`
+        `Se envió un nuevo código a ${maskEmail(pendingEmail)}.`
       );
     } catch (err) {
-      setError(getApiErrorMessage(err, "No fue posible reenviar el código."));
+      console.error("Error técnico al reenviar código:", err);
+
+      setError(
+        getFriendlyApiMessage(
+          err,
+          "No fue posible reenviar el código. Inténtalo nuevamente."
+        )
+      );
     } finally {
       setResending(false);
     }

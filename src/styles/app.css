@@ -567,3 +567,60 @@ body {
   transform: none;
   box-shadow: none;
 }
+
+/* =========================
+   Report PDF
+========================= */
+
+.report-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-soft);
+  margin-bottom: 20px;
+}
+
+.report-title {
+  margin: 0 0 8px;
+  color: var(--color-secondary);
+}
+
+.report-description {
+  margin: 0 0 14px;
+  color: #5f7466;
+  line-height: 1.5;
+}
+
+.report-form {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.report-form .app-input {
+  flex: 1;
+  min-width: 240px;
+}
+
+.success-message {
+  background: var(--color-success-soft);
+  color: var(--color-success);
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-top: 12px;
+}
+
+.app-button:disabled,
+.app-input:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.app-button:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
