@@ -5,7 +5,7 @@ export default function DeviceCard({
   latestReading,
   onDelete,
   onEdit,
-}) {
+}){
   return (
     <div className="device-card">
       <div className="device-card-header">
@@ -29,7 +29,7 @@ export default function DeviceCard({
         <Metric label="Etiqueta" value={device.etiqueta || "-"} />
         <Metric label="Voltaje" value={latestReading ? `${latestReading.voltageAvg} V` : "-"} />
         <Metric label="Corriente" value={latestReading ? `${latestReading.currentAvg} A` : "-"} />
-        <Metric label="Potencia" value={latestReading ? `${latestReading.powerAvg} W` : "-"} />
+        <Metric label="Huella de carbono" value={latestReading ? `${latestReading.carbonKg.toFixed(4)} kg CO₂` : "-"} />
         <Metric label="Energía" value={latestReading ? `${latestReading.energyKwh} kWh` : "-"} />
       </div>
 

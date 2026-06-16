@@ -30,7 +30,7 @@ export default function Dashboard() {
             readingsMap[device.id] = readings[0];
           }
         } catch {
-          // aquí no hace falta reventar toda la vista por una lectura fallida
+          
         }
       }
 
